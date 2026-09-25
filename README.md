@@ -1,8 +1,8 @@
 <div align="center">
 
-<h1>Monorepo Boilerplate</h1>
+<h1>Cartinha do Futuro</h1>
 
-<p><strong>Um monorepo TypeScript completo com Web, Server e Mobile.</strong></p>
+<p><strong>Um site para escrever e guardar cartas para o seu "eu do futuro".</strong></p>
 
 <br/>
 
@@ -13,7 +13,6 @@
 [![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com/)
-[![Expo](https://img.shields.io/badge/Expo-SDK52-000020?style=flat-square&logo=expo&logoColor=white)](https://expo.dev/)
 [![Turborepo](https://img.shields.io/badge/Turborepo-2.x-EF4444?style=flat-square&logo=turborepo&logoColor=white)](https://turbo.build/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.x-F69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 
@@ -22,8 +21,7 @@
 ```
 apps/
 ├── web       → Next.js 15 + Tailwind CSS    [localhost:3000]
-├── server    → Express + Prisma + Docker    [localhost:3001]
-└── mobile    → React Native + Expo
+└── server    → Express + Prisma + Docker    [localhost:3001]
 ```
 
 </div>
@@ -55,17 +53,13 @@ apps/
 
 ## 🎯 Visão Geral
 
-Este repositório é um **boilerplate de monorepo**, um ponto de partida pré-configurado para produtos digitais que precisam de **site**, **API** e **app mobile** ao mesmo tempo.
+Este repositório é a base do **Cartinha do Futuro**: você escreve uma carta para o seu "eu do futuro" e ela fica guardada no site.
 
-Em vez de criar e configurar três repositórios separados, você tem tudo em um único lugar com:
-
-- ✅ **TypeScript** em todas as camadas, com tipos compartilhados entre web, server e mobile
+- ✅ **TypeScript** em todas as camadas, com tipos compartilhados entre web e server
 - ✅ **Docker** para o server e banco de dados, sobe tudo com um comando
 - ✅ **Turborepo** para orquestrar builds e tasks com cache inteligente
 - ✅ **pnpm workspaces** para gerenciar as dependências do monorepo
 - ✅ **CONTEXT.md** otimizado para ferramentas de IA (Claude Code, Cursor, Copilot)
-
-> **Por que monorepo?** Com tudo no mesmo repositório, a IA enxerga o projeto inteiro: tipos do servidor, componentes do front e telas do mobile, sem perder contexto. Refatorações que afetam múltiplos apps acontecem em um único PR.
 
 ---
 
@@ -75,38 +69,37 @@ Em vez de criar e configurar três repositórios separados, você tem tudo em um
 ┌─────────────────────────────────────────────────────────────┐
 │                        MÁQUINA LOCAL                        │
 │                                                             │
-│   ┌──────────────┐         ┌──────────────────────────┐    │
-│   │   web        │         │   mobile                 │    │
-│   │  Next.js 15  │         │  React Native + Expo     │    │
-│   │  :3000       │         │  Expo Go (celular)       │    │
-│   └──────┬───────┘         └────────────┬─────────────┘    │
-│          │                              │                   │
-└──────────┼──────────────────────────────┼───────────────────┘
-           │  HTTP requests               │
-           │  localhost:3001              │
-┌──────────┼──────────────────────────────┼───────────────────┐
-│          │         DOCKER               │                   │
-│   ┌──────▼──────────────────────────────▼─────────────┐     │
-│   │                   server                          │     │
-│   │          Node.js + Express + Prisma               │     │
-│   │                   :3001                           │     │
-│   └──────────────────────┬────────────────────────────┘     │
-│                          │  prisma client                   │
-│   ┌──────────────────────▼────────────────────────────┐     │
-│   │                  PostgreSQL 16                    │     │
-│   │                     :5432                         │     │
-│   └───────────────────────────────────────────────────┘     │
+│   ┌──────────────┐                                          │
+│   │   web        │                                          │
+│   │  Next.js 15  │                                          │
+│   │  :3000       │                                          │
+│   └──────┬───────┘                                          │
+│          │                                                  │
+└──────────┼──────────────────────────────────────────────────┘
+           │  HTTP requests
+           │  localhost:3001
+┌──────────┼──────────────────────────────────────────────────┐
+│          │         DOCKER                                    │
+│   ┌──────▼──────────────────────────────────────────┐        │
+│   │                   server                        │        │
+│   │          Node.js + Express + Prisma             │        │
+│   │                   :3001                          │        │
+│   └──────────────────────┬────────────────────────────┘        │
+│                          │  prisma client                     │
+│   ┌──────────────────────▼────────────────────────────┐        │
+│   │                  PostgreSQL 16                    │        │
+│   │                     :5432                         │        │
+│   └───────────────────────────────────────────────────┘        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 | Serviço       | Tecnologia                       | Onde roda            | Porta  |
-| ------------- | -------------------------------- | -------------------- | ------ |
-| `web`         | Next.js 15 + React 19 + Tailwind | Local                | `3000` |
-| `server`      | Node.js + Express + Prisma       | Docker               | `3001` |
-| `postgres`    | PostgreSQL 16                    | Docker               | `5432` |
-| `mobile`      | React Native + Expo              | Local                |        |
-| Prisma Studio | Interface visual do banco        | Local (quando ativo) | `5555` |
-| Adminer       | GUI do banco (browser)           | Docker               | `8080` |
+| ------------- | --------------------------------- | --------------------- | ------ |
+| `web`         | Next.js 15 + React 19 + Tailwind | Local                 | `3000` |
+| `server`      | Node.js + Express + Prisma       | Docker                | `3001` |
+| `postgres`    | PostgreSQL 16                    | Docker                | `5432` |
+| Prisma Studio | Interface visual do banco        | Local (quando ativo)  | `5555` |
+| Adminer       | GUI do banco (browser)           | Docker                | `8080` |
 
 ---
 
@@ -135,24 +128,15 @@ Em vez de criar e configurar três repositórios separados, você tem tudo em um
 | ----------- | ------ | ------------------------------------------------------- |
 | **Node.js** | 22 LTS | Runtime JavaScript no servidor (Prisma 7 exige ≥ 20.19) |
 | **Express** | 4      | Framework HTTP minimalista e amplamente adotado         |
-| **cors**    | 2      | Middleware de CORS, permite requisições do web e mobile |
+| **cors**    | 2      | Middleware de CORS, permite requisições do web          |
 | **Prisma**  | 7      | ORM moderno com driver adapter (`@prisma/adapter-pg`)   |
 | **Zod**     | 3      | Validação e parsing de dados nas requisições            |
 | **tsx**     | 4      | Executa TypeScript diretamente (dev com hot-reload)     |
 
-### App Mobile (`apps/mobile`)
-
-| Tecnologia       | Versão | Para que serve                                                            |
-| ---------------- | ------ | ------------------------------------------------------------------------- |
-| **React Native** | 0.76   | Apps iOS e Android com React e TypeScript                                 |
-| **Expo**         | SDK 52 | Plataforma de desenvolvimento que simplifica o React Native               |
-| **Expo Router**  | 4      | Sistema de rotas baseado em arquivos (igual ao Next.js)                   |
-| **Axios**        | 1      | Cliente HTTP usado para falar com o server (`apps/mobile/src/lib/api.ts`) |
-
 ### Infraestrutura
 
 | Tecnologia         | Versão    | Para que serve                                |
-| ------------------ | --------- | --------------------------------------------- |
+| ------------------ | --------- | ---------------------------------------------- |
 | **Docker**         |           | Conteineriza server + banco de dados          |
 | **docker-compose** |           | Orquestra múltiplos containers com um comando |
 | **PostgreSQL**     | 16 Alpine | Banco de dados relacional                     |
@@ -162,7 +146,7 @@ Em vez de criar e configurar três repositórios separados, você tem tudo em um
 ## 📁 Estrutura de Pastas
 
 ```
-monorepo-boilerplate/
+cartinha-do-futuro/
 │
 ├── apps/
 │   ├── web/                    # Next.js + Tailwind (roda local)
@@ -178,31 +162,20 @@ monorepo-boilerplate/
 │   │   ├── tsconfig.json       # Extende packages/config/typescript/base.json
 │   │   └── package.json        # name: "web"
 │   │
-│   ├── server/                 # Express + Prisma (roda no Docker)
-│   │   ├── src/
-│   │   │   ├── routes/         # Definição das rotas HTTP
-│   │   │   ├── controllers/    # Handlers das requisições
-│   │   │   ├── services/       # Lógica de negócio
-│   │   │   ├── middlewares/    # Auth, logging, etc.
-│   │   │   └── index.ts        # Entry point
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma   # Estrutura do banco de dados
-│   │   │   └── migrations/     # Histórico de mudanças no banco
-│   │   ├── Dockerfile
-│   │   ├── .env                # Variáveis de ambiente (não commitado)
-│   │   ├── tsconfig.json
-│   │   └── package.json        # name: "server"
-│   │
-│   └── mobile/                 # React Native + Expo (roda local)
+│   └── server/                 # Express + Prisma (roda no Docker)
 │       ├── src/
-│       │   ├── app/            # Expo Router, telas e navegação
-│       │   ├── components/     # Componentes React Native
-│       │   ├── hooks/          # Custom hooks
-│       │   └── lib/            # Utilitários
-│       ├── assets/             # Imagens, fontes, ícones
-│       ├── app.json            # Configuração do Expo
+│       │   ├── routes/         # Definição das rotas HTTP
+│       │   ├── controllers/    # Handlers das requisições
+│       │   ├── services/       # Lógica de negócio
+│       │   ├── middlewares/    # Auth, logging, etc.
+│       │   └── index.ts        # Entry point
+│       ├── prisma/
+│       │   ├── schema.prisma   # Estrutura do banco de dados
+│       │   └── migrations/     # Histórico de mudanças no banco
+│       ├── Dockerfile
+│       ├── .env                # Variáveis de ambiente (não commitado)
 │       ├── tsconfig.json
-│       └── package.json        # name: "mobile"
+│       └── package.json        # name: "server"
 │
 ├── packages/                   # Código compartilhado entre os apps
 │   ├── types/                  # @repo/types, interfaces TypeScript
@@ -243,7 +216,7 @@ docker --version
 docker ps        # deve listar containers sem erro
 ```
 
-> **Turborepo e Expo CLI não precisam ser instalados globalmente.** Ambos estão configurados como dependências do projeto e rodam automaticamente via `pnpm`.
+> **Turborepo não precisa ser instalado globalmente.** Já está configurado como dependência do projeto e roda automaticamente via `pnpm`.
 
 ---
 
@@ -254,8 +227,8 @@ docker ps        # deve listar containers sem erro
 ### 1. Clonar e entrar na pasta
 
 ```bash
-git clone https://github.com/seu-usuario/monorepo-boilerplate.git
-cd monorepo-boilerplate
+git clone <url-do-repositorio>
+cd cartinha-do-futuro
 ```
 
 ### 2. Instalar todas as dependências
@@ -271,7 +244,6 @@ Isso instala as dependências de **todos** os apps e packages de uma vez.
 ```bash
 cp .env.example apps/web/.env.local
 cp .env.example apps/server/.env
-cp .env.example apps/mobile/.env
 ```
 
 Edite cada arquivo e ajuste os valores conforme necessário. Veja a seção [Variáveis de Ambiente](#-variáveis-de-ambiente) para detalhes.
@@ -318,7 +290,7 @@ curl http://localhost:3001/health
 # Terminal 1: sobe o Docker (server + banco)
 pnpm docker:up
 
-# Terminal 2: roda web + mobile localmente
+# Terminal 2: roda o web localmente
 pnpm dev
 ```
 
@@ -328,25 +300,22 @@ pnpm dev
 # Só o front-end
 pnpm dev:web
 
-# Só o app mobile
-pnpm dev:mobile
-
 # Ver logs do server (Docker)
 pnpm docker:logs
 ```
 
-### Rodar web/mobile sem o server (modo offline)
+### Rodar o web sem o server (modo offline)
 
-O `apiGet` em [apps/web/src/lib/api.ts](apps/web/src/lib/api.ts) e [apps/mobile/src/lib/api.ts](apps/mobile/src/lib/api.ts) tem **fallback automático**: se a requisição falhar (server fora do ar, sem rede, URL errada), ele usa os dados de [`lib/mocks.ts`](apps/web/src/lib/mocks.ts) e a tela renderiza um banner amarelo avisando **"Modo offline: sem comunicação com o servidor. Os dados abaixo são mockados."**
+O `apiGet` em [apps/web/src/lib/api.ts](apps/web/src/lib/api.ts) tem **fallback automático**: se a requisição falhar (server fora do ar, sem rede, URL errada), ele usa os dados de [`lib/mocks.ts`](apps/web/src/lib/mocks.ts) e a tela renderiza um banner amarelo avisando **"Modo offline: sem comunicação com o servidor. Os dados abaixo são mockados."**
 
-Isso permite rodar `pnpm dev:web` ou `pnpm dev:mobile` sem precisar do `pnpm docker:up`. Quando o server voltar a responder, o banner some e os dados vêm da API normalmente.
+Isso permite rodar `pnpm dev:web` sem precisar do `pnpm docker:up`. Quando o server voltar a responder, o banner some e os dados vêm da API normalmente.
 
 > ⚠️ O fallback dispara em **qualquer falha de rede**, inclusive erros reais (ex: server retornando 500). Se vir o banner quando o server deveria estar respondendo, cheque os logs com `pnpm docker:logs`.
 
 ### URLs após inicialização
 
 | Serviço         | URL                                  |
-| --------------- | ------------------------------------ |
+| --------------- | ------------------------------------- |
 | Web (Next.js)   | http://localhost:3000                |
 | Server (API)    | http://localhost:3001                |
 | Health Check    | http://localhost:3001/health         |
@@ -360,9 +329,8 @@ Isso permite rodar `pnpm dev:web` ou `pnpm dev:mobile` sem precisar do `pnpm doc
 ### Desenvolvimento
 
 ```bash
-pnpm dev              # Roda web + mobile em paralelo
+pnpm dev              # Roda o web (alias de dev:web)
 pnpm dev:web          # Só o Next.js (porta 3000)
-pnpm dev:mobile       # Só o Expo
 ```
 
 ### Docker (server + banco)
@@ -392,7 +360,7 @@ pnpm format           # Prettier em todos os arquivos
 
 ### Comandos clássicos (sem os atalhos do pnpm)
 
-Os scripts `pnpm` acima são apenas atalhos. Se você está acostumado com os comandos "puros" do Docker, Prisma, Next.js e Expo, eles continuam funcionando normalmente. Use o que for mais natural pra você.
+Os scripts `pnpm` acima são apenas atalhos. Se você está acostumado com os comandos "puros" do Docker, Prisma e Next.js, eles continuam funcionando normalmente. Use o que for mais natural pra você.
 
 ```bash
 # Docker (na raiz do repo)
@@ -409,7 +377,6 @@ npx prisma studio                                 # ≈ pnpm db:studio
 
 # Dev local (dentro do app correspondente)
 cd apps/web && pnpm dev                           # ≈ pnpm dev:web (Next.js: next dev)
-cd apps/mobile && pnpm dev                        # ≈ pnpm dev:mobile (Expo: expo start)
 ```
 
 > Para os comandos do Prisma fora do Docker, lembre de exportar `DATABASE_URL` apontando para `localhost:5432` antes (o host `postgres` só resolve dentro da rede do Docker).
@@ -422,12 +389,12 @@ cd apps/mobile && pnpm dev                        # ≈ pnpm dev:mobile (Expo: e
 
 ### Por que o projeto roda sem criar `.env` em desenvolvimento
 
-Você consegue subir back, front, mobile e banco sem criar nenhum `.env`. Isso acontece por **dois mecanismos distintos**, não por um só:
+Você consegue subir front, back e banco sem criar nenhum `.env`. Isso acontece por **dois mecanismos distintos**, não por um só:
 
 1. **Server e PostgreSQL (no Docker):** o `docker-compose.yml` injeta as variáveis diretamente nos containers pelo bloco `environment:` (`DATABASE_URL`, `PORT`, `WEB_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`). Os processos nunca leem um arquivo `.env`; recebem tudo já populado pelo Docker.
-2. **Web e Mobile (locais):** não recebem nada do Docker. Funcionam sem `.env` porque o código tem **fallback hardcoded** em [apps/web/src/lib/api.ts](apps/web/src/lib/api.ts) e [apps/mobile/src/lib/api.ts](apps/mobile/src/lib/api.ts): `process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"` (e o equivalente `EXPO_PUBLIC_API_URL` no mobile). Como o fallback aponta pra porta que o Docker expõe, o client encontra o server sem configuração extra.
+2. **Web (local):** não recebe nada do Docker. Funciona sem `.env` porque o código tem **fallback hardcoded** em [apps/web/src/lib/api.ts](apps/web/src/lib/api.ts): `process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"`. Como o fallback aponta pra porta que o Docker expõe, o client encontra o server sem configuração extra.
 
-> 🚨 **Em produção isso não vai do jeito que está.** As credenciais do banco (`postgres:postgres`) estão em texto puro no `docker-compose.yml`: bom pra dev local, inseguro pra prod. No deploy real, remova o bloco `environment:` do compose e use `env_file: ./apps/server/.env` (com o `.env` fora do Git) ou um secrets manager (Vault, AWS Secrets Manager, Doppler, etc.). Os fallbacks `?? "http://localhost:3001"` no web/mobile também deixam de fazer sentido: o build do Next/Expo precisa receber a URL real via variável de ambiente no momento do build, senão o app empacotado vai tentar bater em `localhost`.
+> 🚨 **Em produção isso não vai do jeito que está.** As credenciais do banco (`postgres:postgres`) estão em texto puro no `docker-compose.yml`: bom pra dev local, inseguro pra prod. No deploy real, remova o bloco `environment:` do compose e use `env_file: ./apps/server/.env` (com o `.env` fora do Git) ou um secrets manager (Vault, AWS Secrets Manager, Doppler, etc.). O fallback `?? "http://localhost:3001"` no web também deixa de fazer sentido: o build do Next precisa receber a URL real via variável de ambiente no momento do build, senão o app empacotado vai tentar bater em `localhost`.
 
 ### `apps/web/.env.local`
 
@@ -447,12 +414,6 @@ WEB_URL=http://localhost:3000
 ```
 
 > Para rodar comandos do Prisma CLI fora do Docker (ex: `prisma db push` direto no terminal), exporte `DATABASE_URL` apontando para `localhost:5432` antes do comando, ou use `pnpm docker:logs` e rode os comandos via `docker exec`.
-
-### `apps/mobile/.env`
-
-```env
-EXPO_PUBLIC_API_URL=http://localhost:3001
-```
 
 ---
 
@@ -483,6 +444,8 @@ model User {
 }
 ```
 
+> O model `User` é o exemplo que já vem no boilerplate. Para a "cartinha", adicione um model `Letter` (veja [CONTEXT.md](CONTEXT.md#template-de-integração)).
+
 A URL é resolvida via `prisma.config.ts`, e o `PrismaClient` é instanciado com o driver adapter `@prisma/adapter-pg`.
 
 ### Fluxo de trabalho
@@ -500,17 +463,17 @@ pnpm db:studio
 ### `db:push` vs `db:migrate`
 
 |                                | `db:push`                            | `db:migrate`                   |
-| ------------------------------ | ------------------------------------ | ------------------------------ |
+| ------------------------------ | -------------------------------------- | --------------------------------- |
 | **Quando usar**                | Desenvolvimento, explorando o schema | Produção, mudanças definitivas |
-| **Cria arquivo de migration?** | Não                                  | Sim (em `prisma/migrations/`)  |
-| **Mantém histórico?**          | Não                                  | Sim                            |
-| **Pode perder dados?**         | Sim (se remover campos)              | Avisa antes                    |
+| **Cria arquivo de migration?** | Não                                   | Sim (em `prisma/migrations/`)  |
+| **Mantém histórico?**          | Não                                   | Sim                             |
+| **Pode perder dados?**         | Sim (se remover campos)              | Avisa antes                     |
 
 ---
 
 ## 🐳 Docker
 
-O Docker conteineriza apenas o **server** e o **PostgreSQL**. O web e o mobile rodam localmente para ter hot-reload instantâneo.
+O Docker conteineriza apenas o **server** e o **PostgreSQL**. O web roda localmente para ter hot-reload instantâneo.
 
 ### Arquitetura Docker
 
@@ -522,7 +485,7 @@ services:
 
   server: # API Node.js
     build: ./apps/server # constrói a partir do Dockerfile
-    ports: 3001:3001 # exposto localmente para web e mobile
+    ports: 3001:3001 # exposto localmente para o web
     depends_on:
       postgres: { condition: service_healthy }
 ```
@@ -557,7 +520,7 @@ Interfaces e tipos TypeScript compartilhados entre todos os apps.
 import { User, ApiResponse, PaginatedResponse } from "@repo/types";
 ```
 
-Defina aqui todas as interfaces que precisam ser consistentes entre web, server e mobile.
+Defina aqui todas as interfaces que precisam ser consistentes entre web e server.
 
 ### `@repo/utils`
 
@@ -607,7 +570,7 @@ import { formatDate } from "@repo/utils";
 ### Nomenclatura
 
 | Contexto               | Convenção          | Exemplo         |
-| ---------------------- | ------------------ | --------------- |
+| ------------------------ | -------------------- | ----------------- |
 | Variáveis e funções    | `camelCase`        | `getUserById`   |
 | Tipos e interfaces     | `PascalCase`       | `UserProfile`   |
 | Componentes React      | `PascalCase`       | `UserCard`      |
@@ -629,7 +592,7 @@ middlewares/ → Autenticação, logging, validação global
 ## 🔄 Fluxo de Dados
 
 ```
-Usuário clica em algo no Web ou Mobile
+Usuário clica em algo no Web
            ↓
   Requisição HTTP para localhost:3001
            ↓
@@ -647,14 +610,14 @@ Usuário clica em algo no Web ou Mobile
            ↓
   Controller serializa resposta JSON
            ↓
-  Web/Mobile renderiza os dados na tela
+  Web renderiza os dados na tela
 ```
 
 ---
 
 ## 🧩 Template de Integração
 
-Para servir como ponto de partida, o boilerplate já vem com uma rota `GET /users` integrada ponta-a-ponta entre **server**, **web** e **mobile**.
+Para servir como ponto de partida, o boilerplate já vem com uma rota `GET /users` integrada ponta-a-ponta entre **server** e **web**. Use como referência para criar a rota real `/letters`.
 
 ### Server: camadas em ação
 
@@ -674,10 +637,10 @@ curl http://localhost:3001/users
 
 ### Cliente HTTP: Axios
 
-A comunicação entre web/mobile e o server usa **Axios**, não `fetch` puro. Cada app cria sua própria instância via `axios.create({ baseURL })` em `lib/api.ts` e a exporta como `api` para uso direto em chamadas mais sofisticadas (ex: `api.post`, `api.put`, headers customizados, interceptors). O helper `apiGet<T>(path, fallback)` é construído em cima dessa instância e cobre o caso comum (GET com fallback offline).
+A comunicação entre web e server usa **Axios**, não `fetch` puro. O app cria sua própria instância via `axios.create({ baseURL })` em `lib/api.ts` e a exporta como `api` para uso direto em chamadas mais sofisticadas (ex: `api.post`, `api.put`, headers customizados, interceptors). O helper `apiGet<T>(path, fallback)` é construído em cima dessa instância e cobre o caso comum (GET com fallback offline).
 
 ```typescript
-// apps/web/src/lib/api.ts (e apps/mobile/src/lib/api.ts, com EXPO_PUBLIC_API_URL)
+// apps/web/src/lib/api.ts
 import axios from "axios";
 
 export const api = axios.create({
@@ -686,22 +649,18 @@ export const api = axios.create({
 });
 ```
 
-> **Por que axios em vez de `fetch`?** Tipagem genérica nas respostas (`api.get<ApiResponse<T>>`), interceptors prontos para auth/refresh, transformação automática de JSON, timeouts e cancelamento mais simples, e a mesma API funciona idêntica em web e mobile. Para casos mais avançados (ex: interceptor de token), edite a instância `api` em `lib/api.ts`.
+> **Por que axios em vez de `fetch`?** Tipagem genérica nas respostas (`api.get<ApiResponse<T>>`), interceptors prontos para auth/refresh, transformação automática de JSON, timeouts e cancelamento mais simples. Para casos mais avançados (ex: interceptor de token), edite a instância `api` em `lib/api.ts`.
 
 ### Web: `apps/web/src/lib/api.ts`
 
 Helper `apiGet<T>(path, fallback)` usa a instância `api` (axios), desempacota `ApiResponse<T>` e retorna `{ data, isMocked }`. Se a requisição falhar, devolve `fallback` com `isMocked: true`. A `app/page.tsx` é um Server Component que faz `await apiGet<User[]>("/users", mockUsers)` e mostra um banner quando `isMocked`.
 
-### Mobile: `apps/mobile/src/lib/api.ts`
-
-Mesmo helper, lê `EXPO_PUBLIC_API_URL`. A tela `app/index.tsx` chama via `useEffect`, exibe os usuários com `FlatList` e mostra o banner de modo offline quando o fallback dispara.
-
-### Como adicionar uma nova entidade
+### Como adicionar a entidade real (`Letter`)
 
 1. Defina a interface em `packages/types/src/index.ts`
-2. No server, crie `services/<nome>.service.ts` → `controllers/<nome>.controller.ts` → `routes/<nome>.route.ts`
-3. Monte a rota em `apps/server/src/index.ts`: `app.use("/<nome>", <nome>Router)`
-4. No web/mobile, adicione mocks em `lib/mocks.ts` e chame `apiGet<Tipo>("/<nome>", mockTipo)`
+2. No server, crie `services/letters.service.ts` → `controllers/letters.controller.ts` → `routes/letters.route.ts`
+3. Monte a rota em `apps/server/src/index.ts`: `app.use("/letters", lettersRouter)`
+4. No web, adicione mocks em `lib/mocks.ts` e chame `apiGet<Letter[]>("/letters", mockLetters)`
 
 > Os arquivos de exemplo são auto-explicativos e curtos. Leia-os antes de criar os seus para manter o mesmo padrão.
 
@@ -733,7 +692,7 @@ claude
 ### Dicas para codar com IA neste projeto
 
 - Diga qual app você está modificando: `apps/web`, `apps/server`
-- Mencione os tipos: "use a interface `User` de `@repo/types`"
+- Mencione os tipos: "use a interface `Letter` de `@repo/types`"
 - Para novas features: "crie o endpoint no server e o hook no web"
 - Mantenha o `CONTEXT.md` atualizado quando adicionar algo novo
 
@@ -743,6 +702,6 @@ claude
 
 Feito com TypeScript, café e muito `pnpm install`
 
-**[⬆ Voltar ao topo](#monorepo-boilerplate)**
+**[⬆ Voltar ao topo](#cartinha-do-futuro)**
 
 </div>
