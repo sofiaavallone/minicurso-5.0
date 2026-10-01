@@ -5,9 +5,21 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ["var(--font-display)", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        serif: ["var(--font-serif)", "serif"],
+        display: ["var(--font-serif)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"],
+      },
+      colors: {
+        capsule: {
+          bg: "#fcf0f5",
+          ink: "#151515",
+          text: "#3f3a40",
+          rose: "#d0386a",
+          plum: "#6b1650",
+          pink: "#d6336c",
+          orange: "#FF6419",
+        },
       },
     },
   },

@@ -11,3 +11,8 @@ body {
   margin: 0;
   padding: 0;
 }
+
+:focus-visible {
+  outline: 3px solid #e12562;
+  outline-offset: 3px;
+}

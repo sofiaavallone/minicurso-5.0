@@ -1,3 +1,8 @@
+export { HomeView } from "./HomeView";
+export { Hero } from "./Hero";
+export { EnvelopeIllustration } from "./EnvelopeIllustration";
+export { CreateCapsuleModal } from "./CreateCapsuleModal";
+export { Toast } from "./Toast";
 export { CapsuleBoard } from "./CapsuleBoard";
 export { CapsuleCard } from "./CapsuleCard";
 export { CapsuleFilter } from "./CapsuleFilter";

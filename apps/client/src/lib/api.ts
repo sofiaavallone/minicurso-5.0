@@ -1,7 +1,13 @@
 import axios from "axios";
-import type { ApiResponse } from "@repo/types";
+import type {
+  ApiResponse,
+  Capsule,
+  CapsuleFieldErrors,
+  CreateCapsuleInput,
+  ValidationErrorResponse,
+} from "@repo/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -19,4 +25,24 @@ export async function apiGet<T>(path: string, fallback: T): Promise<ApiResult<T>
   } catch {
     return { data: fallback, isMocked: true };
   }
+}
+
+export type CreateCapsuleResult =
+  | { ok: true; capsule: Capsule }
+  | { ok: false; fieldErrors: CapsuleFieldErrors | null };
+
+export async function createCapsule(input: CreateCapsuleInput): Promise<CreateCapsuleResult> {
+  try {
+    const { data } = await api.post<ApiResponse<Capsule>>("/capsules", input);
+    return { ok: true, capsule: data.data };
+  } catch (error) {
+    if (axios.isAxiosError<ValidationErrorResponse>(error) && error.response?.status === 400) {
+      return { ok: false, fieldErrors: error.response.data.fieldErrors };
+    }
+    return { ok: false, fieldErrors: null };
+  }
+}
+
+export async function deleteCapsule(id: string): Promise<void> {
+  await api.delete(`/capsules/${id}`);
 }

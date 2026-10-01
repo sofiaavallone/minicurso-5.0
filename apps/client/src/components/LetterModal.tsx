@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
-import type { Letter } from "@repo/types";
+import type { Capsule } from "@repo/types";
 import { formatLongDate } from "@/lib/capsules";
 import { CategoryTag } from "./CategoryTag";
 import { CloseIcon } from "./icons";
 
 type LetterModalProps = {
-  letter: Letter;
+  capsule: Capsule;
   onClose: () => void;
 };
 
 // Altura de cada linha do papel pautado; o texto usa o mesmo line-height para ficar alinhado.
 const RULE = 32;
 
-export function LetterModal({ letter, onClose }: LetterModalProps) {
+export function LetterModal({ capsule, onClose }: LetterModalProps) {
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -59,14 +59,14 @@ export function LetterModal({ letter, onClose }: LetterModalProps) {
           {/* Margem vertical do caderno */}
           <span aria-hidden="true" className="absolute bottom-0 left-8 top-0 border-l border-dotted border-[#ff72ad]" />
 
-          <CategoryTag category={letter.category} />
+          <CategoryTag category={capsule.category} />
 
           <h2 id="letter-modal-title" className="mt-2 font-display text-4xl leading-[1.05] text-[#7a0a4e] sm:text-5xl">
-            {letter.title}
+            {capsule.title}
           </h2>
 
           <div className="mt-6 space-y-4 text-base text-neutral-900" style={{ lineHeight: `${RULE}px` }}>
-            {letter.content.split(/\n{2,}/).map((paragraph, index) => (
+            {capsule.message.split(/\n{2,}/).map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
           </div>
@@ -74,11 +74,11 @@ export function LetterModal({ letter, onClose }: LetterModalProps) {
           <dl className="mt-6 grid grid-cols-2 gap-4 border-t-2 border-dotted border-[#ff72ad] pt-4">
             <div>
               <dt className="font-mono text-[11px] text-[#b0145f]">escrita em</dt>
-              <dd className="text-sm text-neutral-900">{formatLongDate(letter.createdAt)}</dd>
+              <dd className="text-sm text-neutral-900">{new Date(capsule.createdAt).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}</dd>
             </div>
             <div>
               <dt className="font-mono text-[11px] text-[#b0145f]">aberta a partir de</dt>
-              <dd className="text-sm text-neutral-900">{formatLongDate(letter.deliverAt)}</dd>
+              <dd className="text-sm text-neutral-900">{formatLongDate(capsule.openDate)}</dd>
             </div>
           </dl>
         </div>
