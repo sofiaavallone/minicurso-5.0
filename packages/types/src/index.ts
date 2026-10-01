@@ -19,17 +19,33 @@ export interface User {
   updatedAt: string;
 }
 
-export type LetterCategory = "memoria" | "sonho" | "conselho";
+export type AppEnvironment = "development" | "production" | "test";
 
-export interface Letter {
-  id: string;
-  authorName?: string | null;
+export const CAPSULE_CATEGORIES = ["memoria", "sonho", "meta"] as const;
+export type CapsuleCategory = (typeof CAPSULE_CATEGORIES)[number];
+
+export const CAPSULE_COLORS = ["rosa", "laranja", "lima", "vinho"] as const;
+export type CapsuleColor = (typeof CAPSULE_COLORS)[number];
+
+export interface CreateCapsuleInput {
   title: string;
-  category: LetterCategory;
-  content: string;
-  deliverAt: string; // ISO string, data em que a carta "deve ser lida"
-  createdAt: string;
-  updatedAt: string;
+  message: string;
+  /** Data local no formato AAAA-MM-DD. */
+  openDate: string;
+  category: CapsuleCategory;
+  color: CapsuleColor;
+  email: string;
 }
 
-export type AppEnvironment = "development" | "production" | "test";
+export interface Capsule extends CreateCapsuleInput {
+  id: string;
+  createdAt: string;
+  sentAt: string | null;
+}
+
+export type CapsuleFieldErrors = Partial<Record<keyof CreateCapsuleInput, string>>;
+
+export interface ValidationErrorResponse {
+  error: "validation";
+  fieldErrors: CapsuleFieldErrors;
+}

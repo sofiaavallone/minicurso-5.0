@@ -6,29 +6,24 @@ datasource db {
     provider = "postgresql"
 }
 
+model Capsule {
+    id        String    @id @default(cuid())
+    title     String    @db.VarChar(90)
+    message   String
+    openDate  DateTime  @db.Date
+    category  String
+    color     String
+    email     String
+    createdAt DateTime  @default(now())
+    sentAt    DateTime?
+
+    @@index([sentAt, openDate])
+}
+
 model User {
     id        String   @id @default(cuid())
     email     String   @unique
     name      String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-}
-
-enum LetterCategory {
-    memoria
-    sonho
-    conselho
-}
-
-model Letter {
-    id         String         @id @default(cuid())
-    authorName String?
-    title      String
-    category   LetterCategory
-    content    String         @db.Text
-    deliverAt  DateTime
-    createdAt  DateTime       @default(now())
-    updatedAt  DateTime       @updatedAt
-
-    @@index([deliverAt])
 }

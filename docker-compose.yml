@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: projectdb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d projectdb"]
       interval: 5s
@@ -27,18 +27,28 @@ services:
     command: sh -c "pnpm install --filter server... && pnpm --filter server exec prisma db push && pnpm --filter server dev"
     environment:
       NODE_ENV: development
-      PORT: 3001
+      PORT: 3002
       WEB_URL: http://localhost:3000
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/projectdb?schema=public
       DATABASE_DIRECT_URL: postgresql://postgres:postgres@postgres:5432/projectdb?schema=public
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "3001:3001"
+      - "3002:3002"
     volumes:
       - .:/app
       - server_node_modules:/app/node_modules
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: monorepo_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
   adminer:
     image: adminer
