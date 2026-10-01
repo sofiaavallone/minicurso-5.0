@@ -1,0 +1,64 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+**Cápsula do tempo**: a site for writing letters ("cápsulas") to your future self, to be opened on a set date. pnpm + Turborepo monorepo, all TypeScript. `CONTEXT.md` is the detailed architecture/conventions doc (in Portuguese); read it for anything not covered here and keep it updated when adding apps, ports or conventions.
+
+## Path gotcha
+
+The front-end folder is **`apps/client`**, but its package name is `web`, so `--filter=web` and `pnpm dev:web` target it.
+
+## Commands
+
+Run from the repo root:
+
+```bash
+pnpm install            # also runs `prisma generate` via server postinstall
+pnpm dev                # Next.js only (:3000), runs locally, not in Docker
+pnpm docker:up          # postgres (:5432) + server (:3001) + adminer (:8080)
+pnpm docker:logs        # server logs; ready when "🚀 Server ready" + "📦 Successfully connected" appear
+pnpm docker:rebuild     # rebuild server image
+pnpm build              # turbo build of all apps (packages build first)
+pnpm lint               # eslint in every app
+pnpm format             # prettier write (format:check to verify)
+pnpm db:push | db:migrate | db:studio | db:generate   # Prisma, forwarded to apps/server
+pnpm db:seed            # 2 example letters, only if the table is empty (inside Docker: docker compose exec server pnpm --filter server db:seed)
+```
+
+Type-check the client alone: `cd apps/client && npx tsc --noEmit`. There is **no test framework** configured.
+
+Prisma CLI outside Docker needs `DATABASE_URL` pointing to `localhost:5432`. The host `postgres` only resolves inside the compose network. The server container runs `prisma db push` on every start.
+
+Ports 5432/3001 clash with other local Docker projects. If `docker:up` fails on a busy port, the half-created `monorepo_postgres` is left with no network (`P1001: Can't reach database server at postgres:5432`). Free the port, then `docker compose up -d --force-recreate postgres server`.
+
+## Architecture
+
+- **`apps/client`**: Next.js 15 App Router, React 19, Tailwind v3. Runs locally.
+- **`apps/server`**: Express 4 + Prisma 7, runs in Docker (source is bind-mounted; on Windows `tsx watch` does not see file changes through the mount, so run `docker compose restart server` after editing server code). Layers: `routes/` → `controllers/` → `services/` (only services touch Prisma). Files are named `<entity>.<layer>.ts`. `users.*` is the reference template for new resources.
+- **`packages/types`** (`@repo/types`): every entity shared between apps lives here, mirroring Prisma models, with `DateTime` typed as ISO `string`. All API responses use `ApiResponse<T>` (`{ data, message?, error? }`).
+- **`packages/utils`** (`@repo/utils`), **`packages/config`**: shared helpers and base tsconfig/eslint. Consumed as TS source (no build step), resolved via tsconfig `paths`.
+
+### Prisma 7 specifics
+
+The DB URL is **not** in `schema.prisma`. It comes from `apps/server/prisma.config.ts` (`process.env.DATABASE_URL`). At runtime `PrismaClient` is built with the `@prisma/adapter-pg` driver adapter in `apps/server/src/lib/prisma.ts`, the single shared instance that services import. `users.service.ts` still returns mocks. Seed script: `apps/server/prisma/seed.ts`.
+
+### Client ↔ server data flow
+
+- `apps/client/src/lib/api.ts` owns the single Axios instance (`api`). Don't import `axios` elsewhere. `apiGet<T>(path, fallback)` returns `{ data, isMocked }`. On any failure it returns the required `fallback` (from `lib/mocks.ts`), and the UI must then show the yellow "Modo offline" banner. This lets the front-end run without Docker.
+- `app/page.tsx` is a Server Component that fetches and passes data to client components. It is `force-dynamic` because capsule state depends on today's date.
+
+### Letter / capsule UI
+
+- `Letter` in `@repo/types` has `title`, `category` (`memoria | sonho | conselho`), `content`, `deliverAt` and `createdAt`. A letter is "ready" once the exact instant `deliverAt` has passed. The same rule lives in `isLetterLocked` (server `letters.service.ts`) and `isLetterReady` (client `lib/capsules.ts`), so keep them in sync.
+- `/letters` CRUD: `GET /`, `GET /:id`, `POST /` (`deliverAt` must be in the future), `PUT /:id` (partial, 403 while the letter is locked: sealed capsules can't be edited), `DELETE /:id`. Bodies are validated with zod in `letters.controller.ts`. **Locked letters are returned with `content: ""`**, and `GET /:id` on a locked letter returns 403, so the content never leaves the server before its date.
+- Async handlers must be wrapped in `asyncHandler` (`middlewares/errorHandler.ts`, needed because Express 4 doesn't catch async errors). `notFoundHandler` (JSON 404) and then `errorHandler` (400 bad JSON, 413 body too large, 500) are mounted last in `index.ts`.
+- Client mutations live in `lib/letters.ts` (`createLetter`, `deleteLetter`). There is intentionally no create or edit form in the UI (the owner removed it): letters are created through the API, and a sealed letter can't be changed.
+- `components/CapsuleBoard.tsx` (client) is the parent: filter state, delete (optimistic removal, calls `DELETE /letters/:id`, restores on error, local-only when the `offline` prop is set from `isMocked`), and the open-letter modal. It composes `CapsuleFilter`, `CapsuleCard` (envelope), `LetterModal`, `CapsuleStamp` and `CategoryTag`.
+- Date logic, filter definitions and per-category envelope colors are in `lib/capsules.ts`.
+- Fonts are loaded with `next/font` in `app/layout.tsx` and exposed as the Tailwind families `font-display` (DM Serif Display), `font-sans` (Figtree) and `font-mono` (JetBrains Mono).
+
+## Conventions
+
+- No `any` (use `unknown` + narrowing) and no non-null `!`.
+- Local imports use the `@/` alias. Shared code comes from `@repo/types` / `@repo/utils`.
+- UI copy is in Brazilian Portuguese, and so are the code comments.

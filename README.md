@@ -112,14 +112,14 @@ Este repositório é a base do **Cartinha do Futuro**: você escreve uma carta p
 | **pnpm**      | 9.x    | Gerenciador de pacotes com suporte nativo a workspaces |
 | **Turborepo** | 2.x    | Orquestra builds, paraleliza tasks e gerencia cache    |
 
-### App Web (`apps/web`)
+### App Web (`apps/client`)
 
 | Tecnologia       | Versão | Para que serve                                                |
 | ---------------- | ------ | ------------------------------------------------------------- |
 | **Next.js**      | 15     | Framework React com App Router, SSR, SSG e otimizações        |
 | **React**        | 19     | Biblioteca de interface de usuário                            |
 | **Tailwind CSS** | 3      | Framework CSS utilitário, estilos diretamente no JSX          |
-| **Axios**        | 1      | Cliente HTTP usado para falar com o server (`apps/web/src/lib/api.ts`) |
+| **Axios**        | 1      | Cliente HTTP usado para falar com o server (`apps/client/src/lib/api.ts`) |
 | **TypeScript**   | 5      | Tipagem estática em toda a aplicação                          |
 
 ### App Server (`apps/server`)
@@ -149,7 +149,7 @@ Este repositório é a base do **Cartinha do Futuro**: você escreve uma carta p
 cartinha-do-futuro/
 │
 ├── apps/
-│   ├── web/                    # Next.js + Tailwind (roda local)
+│   ├── client/                 # Next.js + Tailwind (roda local)
 │   │   ├── src/
 │   │   │   ├── app/            # App Router, páginas e layouts
 │   │   │   ├── components/     # Componentes React reutilizáveis
@@ -242,7 +242,7 @@ Isso instala as dependências de **todos** os apps e packages de uma vez.
 ### 3. Configurar as variáveis de ambiente
 
 ```bash
-cp .env.example apps/web/.env.local
+cp .env.example apps/client/.env.local
 cp .env.example apps/server/.env
 ```
 
@@ -306,7 +306,7 @@ pnpm docker:logs
 
 ### Rodar o web sem o server (modo offline)
 
-O `apiGet` em [apps/web/src/lib/api.ts](apps/web/src/lib/api.ts) tem **fallback automático**: se a requisição falhar (server fora do ar, sem rede, URL errada), ele usa os dados de [`lib/mocks.ts`](apps/web/src/lib/mocks.ts) e a tela renderiza um banner amarelo avisando **"Modo offline: sem comunicação com o servidor. Os dados abaixo são mockados."**
+O `apiGet` em [apps/client/src/lib/api.ts](apps/client/src/lib/api.ts) tem **fallback automático**: se a requisição falhar (server fora do ar, sem rede, URL errada), ele usa os dados de [`lib/mocks.ts`](apps/client/src/lib/mocks.ts) e a tela renderiza um banner amarelo avisando **"Modo offline: sem comunicação com o servidor. Os dados abaixo são mockados."**
 
 Isso permite rodar `pnpm dev:web` sem precisar do `pnpm docker:up`. Quando o server voltar a responder, o banner some e os dados vêm da API normalmente.
 
@@ -376,7 +376,7 @@ npx prisma generate                               # ≈ pnpm db:generate
 npx prisma studio                                 # ≈ pnpm db:studio
 
 # Dev local (dentro do app correspondente)
-cd apps/web && pnpm dev                           # ≈ pnpm dev:web (Next.js: next dev)
+cd apps/client && pnpm dev                           # ≈ pnpm dev:web (Next.js: next dev)
 ```
 
 > Para os comandos do Prisma fora do Docker, lembre de exportar `DATABASE_URL` apontando para `localhost:5432` antes (o host `postgres` só resolve dentro da rede do Docker).
@@ -392,11 +392,11 @@ cd apps/web && pnpm dev                           # ≈ pnpm dev:web (Next.js: n
 Você consegue subir front, back e banco sem criar nenhum `.env`. Isso acontece por **dois mecanismos distintos**, não por um só:
 
 1. **Server e PostgreSQL (no Docker):** o `docker-compose.yml` injeta as variáveis diretamente nos containers pelo bloco `environment:` (`DATABASE_URL`, `PORT`, `WEB_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`). Os processos nunca leem um arquivo `.env`; recebem tudo já populado pelo Docker.
-2. **Web (local):** não recebe nada do Docker. Funciona sem `.env` porque o código tem **fallback hardcoded** em [apps/web/src/lib/api.ts](apps/web/src/lib/api.ts): `process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"`. Como o fallback aponta pra porta que o Docker expõe, o client encontra o server sem configuração extra.
+2. **Web (local):** não recebe nada do Docker. Funciona sem `.env` porque o código tem **fallback hardcoded** em [apps/client/src/lib/api.ts](apps/client/src/lib/api.ts): `process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"`. Como o fallback aponta pra porta que o Docker expõe, o client encontra o server sem configuração extra.
 
 > 🚨 **Em produção isso não vai do jeito que está.** As credenciais do banco (`postgres:postgres`) estão em texto puro no `docker-compose.yml`: bom pra dev local, inseguro pra prod. No deploy real, remova o bloco `environment:` do compose e use `env_file: ./apps/server/.env` (com o `.env` fora do Git) ou um secrets manager (Vault, AWS Secrets Manager, Doppler, etc.). O fallback `?? "http://localhost:3001"` no web também deixa de fazer sentido: o build do Next precisa receber a URL real via variável de ambiente no momento do build, senão o app empacotado vai tentar bater em `localhost`.
 
-### `apps/web/.env.local`
+### `apps/client/.env.local`
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
@@ -535,7 +535,7 @@ import { formatDate, sleep, isProd } from "@repo/utils";
 O `tsconfig.json` de cada app estende `packages/config/typescript/base.json`:
 
 ```json
-// apps/web/tsconfig.json
+// apps/client/tsconfig.json
 {
   "extends": "../../packages/config/typescript/base.json",
   ...
@@ -640,7 +640,7 @@ curl http://localhost:3001/users
 A comunicação entre web e server usa **Axios**, não `fetch` puro. O app cria sua própria instância via `axios.create({ baseURL })` em `lib/api.ts` e a exporta como `api` para uso direto em chamadas mais sofisticadas (ex: `api.post`, `api.put`, headers customizados, interceptors). O helper `apiGet<T>(path, fallback)` é construído em cima dessa instância e cobre o caso comum (GET com fallback offline).
 
 ```typescript
-// apps/web/src/lib/api.ts
+// apps/client/src/lib/api.ts
 import axios from "axios";
 
 export const api = axios.create({
@@ -651,7 +651,7 @@ export const api = axios.create({
 
 > **Por que axios em vez de `fetch`?** Tipagem genérica nas respostas (`api.get<ApiResponse<T>>`), interceptors prontos para auth/refresh, transformação automática de JSON, timeouts e cancelamento mais simples. Para casos mais avançados (ex: interceptor de token), edite a instância `api` em `lib/api.ts`.
 
-### Web: `apps/web/src/lib/api.ts`
+### Web: `apps/client/src/lib/api.ts`
 
 Helper `apiGet<T>(path, fallback)` usa a instância `api` (axios), desempacota `ApiResponse<T>` e retorna `{ data, isMocked }`. Se a requisição falhar, devolve `fallback` com `isMocked: true`. A `app/page.tsx` é um Server Component que faz `await apiGet<User[]>("/users", mockUsers)` e mostra um banner quando `isMocked`.
 
@@ -691,7 +691,7 @@ claude
 
 ### Dicas para codar com IA neste projeto
 
-- Diga qual app você está modificando: `apps/web`, `apps/server`
+- Diga qual app você está modificando: `apps/client`, `apps/server`
 - Mencione os tipos: "use a interface `Letter` de `@repo/types`"
 - Para novas features: "crie o endpoint no server e o hook no web"
 - Mantenha o `CONTEXT.md` atualizado quando adicionar algo novo

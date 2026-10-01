@@ -12,7 +12,7 @@
 
 | App            | Pasta         | Tecnologia                             | Onde roda | Porta  |
 | -------------- | ------------- | --------------------------------------- | --------- | ------ |
-| Front-end web  | `apps/web`    | Next.js 15 + React 19 + Tailwind CSS 3 | Local     | `3000` |
+| Front-end web  | `apps/client`    | Next.js 15 + React 19 + Tailwind CSS 3 | Local     | `3000` |
 | API / Back-end | `apps/server` | Node.js 22 + Express 4 + Prisma 7      | Docker    | `3001` |
 
 ### Infraestrutura
@@ -35,7 +35,7 @@
 ## Fluxo de Dados
 
 ```
-apps/web (Next.js) ── HTTP → apps/server (Express :3001) → Prisma → PostgreSQL (:5432)
+apps/client (Next.js) ── HTTP → apps/server (Express :3001) → Prisma → PostgreSQL (:5432)
 ```
 
 - O web se comunica com o server via HTTP em `http://localhost:3001`
@@ -187,11 +187,11 @@ pnpm db:generate  # Regenera o Prisma Client após mudanças no schema
 Em desenvolvimento, dá pra subir front e banco sem criar nenhum `.env`. Isso acontece por **dois mecanismos distintos**:
 
 1. **Server e PostgreSQL** rodam no Docker e recebem as variáveis pelo bloco `environment:` do `docker-compose.yml` (`DATABASE_URL`, `PORT`, `WEB_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`). Os processos não leem nenhum `.env`; o Docker injeta tudo direto no container.
-2. **Web** roda localmente e não depende do Docker. Funciona sem `.env` porque o código tem fallback hardcoded em `apps/web/src/lib/api.ts`: `process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"`. O fallback bate com a porta que o Docker expõe, então o client acha o server sem configuração extra.
+2. **Web** roda localmente e não depende do Docker. Funciona sem `.env` porque o código tem fallback hardcoded em `apps/client/src/lib/api.ts`: `process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"`. O fallback bate com a porta que o Docker expõe, então o client acha o server sem configuração extra.
 
 **Em produção isso muda:** as credenciais do banco no `docker-compose.yml` estão em texto puro, o que é aceitável só pra dev. No deploy, troca-se o bloco `environment:` do compose por `env_file:` apontando para um `.env` fora do Git, ou usa-se secrets manager (Vault, AWS Secrets, Doppler). O fallback `?? "http://localhost:3001"` no client também perde sentido: o build do Next precisa receber a URL real via variável de ambiente no momento do build.
 
-### `apps/web/.env.local`
+### `apps/client/.env.local`
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
@@ -256,7 +256,7 @@ npx prisma generate                               # ≈ pnpm db:generate
 npx prisma studio                                 # ≈ pnpm db:studio
 
 # Dev local (dentro do app correspondente)
-cd apps/web && pnpm dev                           # ≈ pnpm dev:web (next dev)
+cd apps/client && pnpm dev                           # ≈ pnpm dev:web (next dev)
 ```
 
 > Para rodar Prisma CLI fora do Docker, exporte `DATABASE_URL` apontando para `localhost:5432` antes (o host `postgres` só resolve dentro da rede do compose).
@@ -268,7 +268,7 @@ cd apps/web && pnpm dev                           # ≈ pnpm dev:web (next dev)
 ```
 cartinha-do-futuro/
 ├── apps/
-│   ├── web/
+│   ├── client/
 │   │   ├── src/
 │   │   │   ├── app/            # App Router, page.tsx, layout.tsx
 │   │   │   ├── components/     # Componentes React (.tsx)
@@ -345,10 +345,10 @@ src/index.ts                        → app.use("/users", usersRouter)
 
 ### Cliente HTTP compartilhado em forma
 
-O web usa **Axios**. `apps/web/src/lib/api.ts` cria a instância via `axios.create({ baseURL })` e exporta tanto a instância `api` (para chamadas avançadas: `api.post`, `api.put`, interceptors, headers customizados) quanto o helper `apiGet<T>` para o caso comum.
+O web usa **Axios**. `apps/client/src/lib/api.ts` cria a instância via `axios.create({ baseURL })` e exporta tanto a instância `api` (para chamadas avançadas: `api.post`, `api.put`, interceptors, headers customizados) quanto o helper `apiGet<T>` para o caso comum.
 
 ```typescript
-// apps/web/src/lib/api.ts
+// apps/client/src/lib/api.ts
 import axios from "axios";
 import type { ApiResponse } from "@repo/types";
 
@@ -386,7 +386,7 @@ O `fallback` é **obrigatório** e é usado automaticamente quando a requisiçã
 
 ### Web
 
-`apps/web/src/app/page.tsx` é um **Server Component** que faz `await apiGet<T>(...)` no render e renderiza o banner condicional quando `isMocked`. Use `cache: "no-store"` se precisar de dados sempre frescos (já está no helper).
+`apps/client/src/app/page.tsx` é um **Server Component** que faz `await apiGet<T>(...)` no render e renderiza o banner condicional quando `isMocked`. Use `cache: "no-store"` se precisar de dados sempre frescos (já está no helper).
 
 ### Para adicionar a entidade `Letter` (a cartinha)
 
