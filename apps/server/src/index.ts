@@ -1,8 +1,10 @@
+import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { prisma } from "./lib/prisma";
+import { startCapsuleMailer } from "./jobs/send-due-capsules";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
-import { lettersRouter } from "./routes/letters.route";
+import { capsulesRouter } from "./routes/capsules.route";
 import { usersRouter } from "./routes/users.route";
 
 const app = express();
@@ -15,7 +17,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/users", usersRouter);
-app.use("/letters", lettersRouter);
+app.use("/capsules", capsulesRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -27,6 +29,7 @@ async function start() {
   app.listen(port, () => {
     console.log(`🚀 Server ready at http://localhost:${port}`);
     console.log(`📦 Successfully connected with database`);
+    startCapsuleMailer();
   });
 }
 

@@ -1,19 +1,19 @@
-import type { Letter } from "@repo/types";
-import { CATEGORY_STYLES, formatShortDate } from "@/lib/capsules";
+import type { Capsule } from "@repo/types";
+import { CAPSULE_COLOR_OPTIONS, formatShortDate } from "@/lib/capsules";
 import { CapsuleStamp } from "./CapsuleStamp";
 import { CategoryTag } from "./CategoryTag";
 import { SparkleIcon, TrashIcon } from "./icons";
 
 type CapsuleCardProps = {
-  letter: Letter;
+  capsule: Capsule;
   ready: boolean;
   daysLeft: number;
-  onOpen: (letter: Letter) => void;
-  onDelete: (letter: Letter) => void;
+  onOpen: (capsule: Capsule) => void;
+  onDelete: (capsule: Capsule) => void;
 };
 
-export function CapsuleCard({ letter, ready, daysLeft, onOpen, onDelete }: CapsuleCardProps) {
-  const colors = CATEGORY_STYLES[letter.category];
+export function CapsuleCard({ capsule, ready, daysLeft, onOpen, onDelete }: CapsuleCardProps) {
+  const colors = CAPSULE_COLOR_OPTIONS[capsule.color];
 
   return (
     <article className="flex flex-col gap-3">
@@ -21,14 +21,14 @@ export function CapsuleCard({ letter, ready, daysLeft, onOpen, onDelete }: Capsu
       <div
         role={ready ? "button" : undefined}
         tabIndex={ready ? 0 : undefined}
-        aria-label={ready ? `Abrir carta "${letter.title}"` : undefined}
-        onClick={ready ? () => onOpen(letter) : undefined}
+        aria-label={ready ? `Abrir carta "${capsule.title}"` : undefined}
+        onClick={ready ? () => onOpen(capsule) : undefined}
         onKeyDown={
           ready
             ? (event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  onOpen(letter);
+                  onOpen(capsule);
                 }
               }
             : undefined
@@ -38,7 +38,7 @@ export function CapsuleCard({ letter, ready, daysLeft, onOpen, onDelete }: Capsu
             ? "cursor-pointer ring-[3px] ring-[#c6f57f] ring-offset-[3px] ring-offset-[#fff4f9] transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-[#8a1f9e]"
             : ""
         }`}
-        style={{ backgroundColor: colors.envelope }}
+        style={{ backgroundColor: colors.bg }}
       >
         {/* Bolso inferior (dobras laterais do envelope) */}
         <div
@@ -66,11 +66,11 @@ export function CapsuleCard({ letter, ready, daysLeft, onOpen, onDelete }: Capsu
 
         {/* Papel da carta */}
         <div className="absolute inset-x-3 bottom-3 z-10 rounded-xl bg-[#fff1f7] p-4 shadow-sm">
-          <h3 className="font-display text-xl leading-tight text-neutral-950">{letter.title}</h3>
+          <h3 className="font-display text-xl leading-tight text-neutral-950">{capsule.title}</h3>
           <div className="mt-3 flex items-center justify-between border-t border-dotted border-[#f3c3d8] pt-3">
-            <CategoryTag category={letter.category} />
-            <time dateTime={letter.deliverAt} className="font-mono text-xs text-neutral-800">
-              {formatShortDate(letter.deliverAt)}
+            <CategoryTag category={capsule.category} />
+            <time dateTime={capsule.openDate} className="font-mono text-xs text-neutral-800">
+              {formatShortDate(capsule.openDate)}
             </time>
           </div>
         </div>
@@ -91,8 +91,8 @@ export function CapsuleCard({ letter, ready, daysLeft, onOpen, onDelete }: Capsu
 
         <button
           type="button"
-          onClick={() => onDelete(letter)}
-          aria-label={`Excluir "${letter.title}"`}
+          onClick={() => onDelete(capsule)}
+          aria-label={`Excluir "${capsule.title}"`}
           className="rounded-full p-2 text-neutral-700 transition-colors hover:bg-[#fbd3e6] hover:text-[#8a1047]"
         >
           <TrashIcon className="h-4 w-4" />
