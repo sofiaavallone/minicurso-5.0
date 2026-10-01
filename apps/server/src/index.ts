@@ -1,16 +1,9 @@
 import cors from "cors";
 import express from "express";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "./lib/prisma";
+import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
+import { lettersRouter } from "./routes/letters.route";
 import { usersRouter } from "./routes/users.route";
-
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is not set");
-}
-
-const adapter = new PrismaPg({ connectionString: databaseUrl });
-const prisma = new PrismaClient({ adapter });
 
 const app = express();
 
@@ -22,6 +15,10 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/users", usersRouter);
+app.use("/letters", lettersRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const port = Number(process.env.PORT) || 3001;
 

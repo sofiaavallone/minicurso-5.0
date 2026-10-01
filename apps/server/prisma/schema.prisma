@@ -13,3 +13,22 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
+
+enum LetterCategory {
+    memoria
+    sonho
+    conselho
+}
+
+model Letter {
+    id         String         @id @default(cuid())
+    authorName String?
+    title      String
+    category   LetterCategory
+    content    String         @db.Text
+    deliverAt  DateTime
+    createdAt  DateTime       @default(now())
+    updatedAt  DateTime       @updatedAt
+
+    @@index([deliverAt])
+}

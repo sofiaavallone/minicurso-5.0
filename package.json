@@ -16,7 +16,8 @@
     "db:push": "pnpm --filter server db:push",
     "db:migrate": "pnpm --filter server db:migrate",
     "db:studio": "pnpm --filter server db:studio",
-    "db:generate": "pnpm --filter server db:generate"
+    "db:generate": "pnpm --filter server db:generate",
+    "db:seed": "pnpm --filter server db:seed"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
